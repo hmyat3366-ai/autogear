@@ -17,10 +17,6 @@ export default function Navbar({ onCartOpen }) {
     <nav className="navbar">
       <Link to="/" className="brand">Auto<span>Gear</span></Link>
 
-      <button className="mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
-        {mobileOpen ? '✕' : '☰'}
-      </button>
-
       <div className={`nav-links ${mobileOpen ? 'open' : ''}`}>
         {user?.role === 'admin' ? (
           <>
@@ -56,6 +52,9 @@ export default function Navbar({ onCartOpen }) {
             🛒 Cart {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
           </button>
         )}
+        <button className="mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
+          {mobileOpen ? '✕' : '☰'}
+        </button>
       </div>
     </nav>
   );
