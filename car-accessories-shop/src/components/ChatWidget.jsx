@@ -7,6 +7,7 @@ let socket;
 export default function ChatWidget() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [messages, setMessages] = useState([
     { id: 1, text: 'AutoGear မှ ကြိုဆိုပါတယ်ခင်ဗျာ! 🚗 ဒီနေ့ ဘာများကူညီပေးရမလဲ?', sender: 'admin', time: new Date() },
   ]);
@@ -80,7 +81,7 @@ export default function ChatWidget() {
   return (
     <>
       {isOpen && (
-        <div className="chat-widget">
+        <div className={`chat-widget ${isExpanded ? 'expanded' : ''}`}>
           <div className="chat-header">
             <div className="chat-header-info">
               <div className="chat-avatar">AG</div>
@@ -89,7 +90,16 @@ export default function ChatWidget() {
                 <div className="chat-status">{isConnected ? '🟢 Online' : '⚪ Connecting...'}</div>
               </div>
             </div>
-            <button className="chat-close" onClick={() => setIsOpen(false)}>✕</button>
+            <div className="chat-controls">
+              <button className="chat-action-btn" onClick={() => setIsExpanded(!isExpanded)} title={isExpanded ? "Minimize" : "Expand"}>
+                {isExpanded ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                )}
+              </button>
+              <button className="chat-action-btn" onClick={() => setIsOpen(false)} title="Close">✕</button>
+            </div>
           </div>
 
           <div className="chat-body" ref={bodyRef}>
