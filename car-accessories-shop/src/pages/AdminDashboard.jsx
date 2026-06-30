@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import AdminSidebar from '../components/AdminSidebar';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const API_URL = 'https://autogear-api.onrender.com/api';
 
@@ -21,6 +22,15 @@ export default function AdminDashboard() {
   const totalRevenue = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
   const activeOrders = orders.filter(o => o.status === 'Processing').length;
   const totalCustomers = registeredUsers?.length || 0;
+
+  const revenueData = React.useMemo(() => {
+    const grouped = [...orders].reverse().reduce((acc, order) => {
+      const date = new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      acc[date] = (acc[date] || 0) + (order.totalAmount || 0);
+      return acc;
+    }, {});
+    return Object.keys(grouped).map(date => ({ date, Revenue: grouped[date] })).slice(-10);
+  }, [orders]);
 
   if (!user || user.role !== 'admin') {
     return (
@@ -75,6 +85,32 @@ export default function AdminDashboard() {
               )}
             </div>
           ))}
+        </div>
+
+        {/* Revenue Overview Chart */}
+        <div style={{ background: '#12141a', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', padding: '2rem 1.5rem', marginBottom: '3rem' }}>
+          <h3 style={{ margin: '0 0 1.5rem 0' }}>Revenue Overview (Last 10 Days)</h3>
+          <div style={{ height: '300px', width: '100%' }}>
+            {revenueData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="date" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#1a1d24', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}
+                    itemStyle={{ color: 'var(--primary)', fontWeight: 'bold' }}
+                    formatter={(value) => [`$${value.toFixed(2)}`, 'Revenue']}
+                  />
+                  <Line type="monotone" dataKey="Revenue" stroke="var(--primary)" strokeWidth={3} dot={{ r: 4, fill: '#12141a', strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                Not enough data to display chart
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Recent Activity */}
