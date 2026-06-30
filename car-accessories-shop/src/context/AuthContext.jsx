@@ -18,7 +18,13 @@ export const AuthProvider = ({ children }) => {
     if (user?.role === 'admin') {
       fetch(`${API_URL}/users`)
         .then(res => res.json())
-        .then(data => setRegisteredUsers(data))
+        .then(data => {
+          if (Array.isArray(data)) {
+            setRegisteredUsers(data);
+          } else {
+            setRegisteredUsers([]);
+          }
+        })
         .catch(err => console.error('Failed to fetch users:', err));
     }
   }, [user]);

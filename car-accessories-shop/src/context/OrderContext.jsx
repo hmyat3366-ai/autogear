@@ -19,6 +19,10 @@ export const OrderProvider = ({ children }) => {
     fetch(`${API_URL}/orders`)
       .then(res => res.json())
       .then(data => {
+        if (!Array.isArray(data)) {
+          setOrders([]);
+          return;
+        }
         // If normal user, filter their orders only. If admin, see all.
         if (user.role === 'admin') {
           setOrders(data);
