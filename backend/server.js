@@ -160,13 +160,20 @@ io.on('connection', (socket) => {
   socket.on('user_join', async (data) => {
     const userName = data?.name || `Customer-${socket.id.substring(0, 4)}`;
     const userEmail = data?.email || '';
-    activeUsers.set(socket.id, {
-      id: socket.id,
+    const userId = userEmail || socket.id; // Use email as unique ID to prevent duplicates
+
+    socket.join(userId); // Join room so admin can send back via this ID
+
+    const existingUser = activeUsers.get(userId) || { unread: 0, lastMsg: '' };
+
+    activeUsers.set(userId, {
+      id: userId,
+      socketId: socket.id, // Store current socket ID
       name: userName,
       email: userEmail,
       status: 'online',
-      lastMsg: '',
-      unread: 0
+      lastMsg: existingUser.lastMsg,
+      unread: existingUser.unread
     });
     
     // Load chat history for this user
@@ -185,21 +192,29 @@ io.on('connection', (socket) => {
 
   // User sends message
   socket.on('user_send_message', async (data) => {
-    const user = activeUsers.get(socket.id);
-    if (user) {
-      user.lastMsg = data.text;
-      user.unread += 1;
+    // Find user by current socket.id
+    let currentUser = null;
+    for (let user of activeUsers.values()) {
+      if (user.socketId === socket.id) {
+        currentUser = user;
+        break;
+      }
+    }
+
+    if (currentUser) {
+      currentUser.lastMsg = data.text;
+      currentUser.unread += 1;
       
       const message = { id: Date.now(), text: data.text, sender: 'user', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
       
       // Save to database
-      if (user.email) {
+      if (currentUser.email) {
         try {
-          await ChatMessage.create({ senderEmail: user.email, senderName: user.name, text: data.text, sender: 'user' });
+          await ChatMessage.create({ senderEmail: currentUser.email, senderName: currentUser.name, text: data.text, sender: 'user' });
         } catch (e) { console.error('Save chat error:', e); }
       }
       
-      io.emit('admin_receive_message', { userId: socket.id, message });
+      io.emit('admin_receive_message', { userId: currentUser.id, message });
       io.emit('admin_update_users', Array.from(activeUsers.values()));
     }
   });
@@ -238,10 +253,12 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    if (activeUsers.has(socket.id)) {
-      const user = activeUsers.get(socket.id);
-      user.status = 'offline';
-      io.emit('admin_update_users', Array.from(activeUsers.values()));
+    for (let [userId, user] of activeUsers.entries()) {
+      if (user.socketId === socket.id) {
+        user.status = 'offline';
+        io.emit('admin_update_users', Array.from(activeUsers.values()));
+        break;
+      }
     }
   });
 });
