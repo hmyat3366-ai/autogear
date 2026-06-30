@@ -34,18 +34,18 @@ export default function Navbar({ onCartOpen }) {
             </Link>
           </>
         )}
-        {user ? (
-          <button className="role-toggle-btn" onClick={() => { logout(); setMobileOpen(false); }} title="Logout">
-            Logout ({user.name})
-          </button>
-        ) : (
-          <Link to="/login" className="role-toggle-btn" style={{ textDecoration: 'none' }} onClick={() => setMobileOpen(false)}>
-            Login
-          </Link>
-        )}
       </div>
 
       <div className="nav-actions">
+        {user ? (
+          <button className="nav-auth-btn logout" onClick={() => { logout(); setMobileOpen(false); }} title="Logout">
+            👤 {user.name}
+          </button>
+        ) : (
+          <Link to="/login" className="nav-auth-btn login" onClick={() => setMobileOpen(false)}>
+            🔐 Login
+          </Link>
+        )}
         {user?.role !== 'admin' && (
           <button className="cart-btn" onClick={onCartOpen}>
             🛒 Cart {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
