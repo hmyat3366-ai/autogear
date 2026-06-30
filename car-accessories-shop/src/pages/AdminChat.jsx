@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { io } from 'socket.io-client';
-
+import AdminSidebar from '../components/AdminSidebar';
 let socket;
 
 export default function AdminChat() {
@@ -92,22 +92,7 @@ export default function AdminChat() {
   return (
     <div style={{ display: 'flex', minHeight: 'calc(100vh - 80px)', background: '#0a0b0e' }}>
       {/* Sidebar Navigation */}
-      <div style={{ width: '260px', background: '#12141a', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem' }}>
-          <div style={{ background: 'var(--primary)', color: '#fff', width: '36px', height: '36px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1rem' }}>AG</div>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '1rem' }}>Admin Portal</h2>
-            <span style={{ fontSize: '0.7rem', color: '#4caf50' }}>● Online</span>
-          </div>
-        </div>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1 }}>
-          <Link to="/admin" style={{ padding: '0.7rem 0.8rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>📊 Dashboard</Link>
-          <Link to="/admin/chat" style={{ padding: '0.7rem 0.8rem', background: 'rgba(229,57,53,0.1)', color: 'var(--primary)', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>💬 Live Chat</Link>
-          <Link to="/admin/orders" style={{ padding: '0.7rem 0.8rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>📦 Orders</Link>
-          <Link to="/admin/products" style={{ padding: '0.7rem 0.8rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>🏷️ Products</Link>
-          <Link to="/admin/customers" style={{ padding: '0.7rem 0.8rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>👥 Customers</Link>
-        </nav>
-      </div>
+      <AdminSidebar />
 
       {/* Main Chat Area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>

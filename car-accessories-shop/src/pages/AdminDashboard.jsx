@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import AdminSidebar from '../components/AdminSidebar';
 
 const API_URL = 'https://autogear-api.onrender.com/api';
 
@@ -35,50 +36,7 @@ export default function AdminDashboard() {
     <div style={{ display: 'flex', minHeight: 'calc(100vh - 80px)', background: '#0a0b0e' }}>
       
       {/* Sidebar */}
-      <div style={{ width: '280px', background: '#12141a', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3rem' }}>
-          <div style={{ background: 'var(--primary)', color: '#fff', width: '40px', height: '40px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>
-            AG
-          </div>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '1.1rem' }}>Admin Portal</h2>
-            <span style={{ fontSize: '0.75rem', color: '#4caf50' }}>● System Online</span>
-          </div>
-        </div>
-
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-          <Link to="/admin" style={{ padding: '0.8rem 1rem', background: 'rgba(229,57,53,0.1)', color: 'var(--primary)', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span>📊</span> Dashboard
-          </Link>
-          <Link to="/admin/chat" style={{ padding: '0.8rem 1rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px', transition: 'background 0.2s' }} onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.05)'} onMouseOut={(e) => e.target.style.background = 'transparent'}>
-            <span>💬</span> Live Chat Inbox
-          </Link>
-          <Link to="/admin/orders" style={{ padding: '0.8rem 1rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px', transition: 'background 0.2s' }} onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.05)'} onMouseOut={(e) => e.target.style.background = 'transparent'}>
-            <span>📦</span> Orders
-          </Link>
-          <Link to="/admin/products" style={{ padding: '0.8rem 1rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px', transition: 'background 0.2s' }} onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.05)'} onMouseOut={(e) => e.target.style.background = 'transparent'}>
-            <span>🏷️</span> Products
-          </Link>
-          <Link to="/admin/customers" style={{ padding: '0.8rem 1rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px', transition: 'background 0.2s' }} onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.05)'} onMouseOut={(e) => e.target.style.background = 'transparent'}>
-            <span>👥</span> Customers
-          </Link>
-        </nav>
-
-        <div style={{ marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-            <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              👤
-            </div>
-            <div>
-              <div style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{user.name}</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{user.email}</div>
-            </div>
-          </div>
-          <button onClick={logout} style={{ width: '100%', padding: '0.6rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text)', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.05)'} onMouseOut={(e) => e.target.style.background = 'transparent'}>
-            Sign Out
-          </button>
-        </div>
-      </div>
+      <AdminSidebar />
 
       {/* Main Content */}
       <div style={{ flex: 1, padding: '2rem 3rem', overflowY: 'auto' }}>

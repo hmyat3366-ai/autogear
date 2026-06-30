@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useProducts } from '../context/ProductContext';
 import { Link } from 'react-router-dom';
-
+import AdminSidebar from '../components/AdminSidebar';
 export default function AdminProducts() {
   const { user } = useAuth();
   const { products, addProduct, deleteProduct, updateProduct } = useProducts();
@@ -30,19 +30,7 @@ export default function AdminProducts() {
   return (
     <div style={{ display: 'flex', minHeight: 'calc(100vh - 80px)', background: '#0a0b0e' }}>
       {/* Sidebar */}
-      <div style={{ width: '280px', background: '#12141a', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3rem' }}>
-          <div style={{ background: 'var(--primary)', color: '#fff', width: '40px', height: '40px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>AG</div>
-          <div><h2 style={{ margin: 0, fontSize: '1.1rem' }}>Admin Portal</h2></div>
-        </div>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <Link to="/admin" style={{ padding: '0.8rem 1rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', gap: '10px' }}><span>📊</span> Dashboard</Link>
-          <Link to="/admin/chat" style={{ padding: '0.8rem 1rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', gap: '10px' }}><span>💬</span> Chat Inbox</Link>
-          <Link to="/admin/orders" style={{ padding: '0.8rem 1rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', gap: '10px' }}><span>📦</span> Orders</Link>
-          <Link to="/admin/products" style={{ padding: '0.8rem 1rem', background: 'rgba(229,57,53,0.1)', color: 'var(--primary)', textDecoration: 'none', borderRadius: '8px', display: 'flex', gap: '10px' }}><span>🏷️</span> Products</Link>
-          <Link to="/admin/customers" style={{ padding: '0.8rem 1rem', color: 'var(--text)', textDecoration: 'none', borderRadius: '8px', display: 'flex', gap: '10px' }}><span>👥</span> Customers</Link>
-        </nav>
-      </div>
+      <AdminSidebar />
 
       {/* Main Content */}
       <div style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column' }}>
