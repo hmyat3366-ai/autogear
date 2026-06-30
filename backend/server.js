@@ -45,6 +45,15 @@ const OrderSchema = new mongoose.Schema({
 });
 const Order = mongoose.model('Order', OrderSchema);
 
+const ChatMessageSchema = new mongoose.Schema({
+  senderEmail: { type: String, required: true },
+  senderName: String,
+  text: { type: String, required: true },
+  sender: { type: String, enum: ['user', 'admin'], required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+const ChatMessage = mongoose.model('ChatMessage', ChatMessageSchema);
+
 const jwt = require('jsonwebtoken');
 
 // --- REST APIs for Authentication ---
@@ -131,6 +140,16 @@ app.put('/api/orders/:id/status', async (req, res) => {
   }
 });
 
+// --- REST API for Chat History ---
+app.get('/api/chat/:email', async (req, res) => {
+  try {
+    const messages = await ChatMessage.find({ senderEmail: req.params.email }).sort({ createdAt: 1 }).limit(100);
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to load chat history' });
+  }
+});
+
 // --- WebSocket Logic (Chat & Real-time) ---
 const activeUsers = new Map();
 
@@ -138,22 +157,34 @@ io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
   // When a normal user joins
-  socket.on('user_join', (data) => {
+  socket.on('user_join', async (data) => {
     const userName = data?.name || `Customer-${socket.id.substring(0, 4)}`;
+    const userEmail = data?.email || '';
     activeUsers.set(socket.id, {
       id: socket.id,
       name: userName,
+      email: userEmail,
       status: 'online',
       lastMsg: '',
       unread: 0
     });
+    
+    // Load chat history for this user
+    if (userEmail) {
+      try {
+        const history = await ChatMessage.find({ senderEmail: userEmail }).sort({ createdAt: 1 }).limit(100);
+        socket.emit('chat_history', history);
+      } catch (e) {
+        console.error('Failed to load chat history:', e);
+      }
+    }
     
     console.log(`${userName} joined.`);
     io.emit('admin_update_users', Array.from(activeUsers.values()));
   });
 
   // User sends message
-  socket.on('user_send_message', (data) => {
+  socket.on('user_send_message', async (data) => {
     const user = activeUsers.get(socket.id);
     if (user) {
       user.lastMsg = data.text;
@@ -161,17 +192,32 @@ io.on('connection', (socket) => {
       
       const message = { id: Date.now(), text: data.text, sender: 'user', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
       
+      // Save to database
+      if (user.email) {
+        try {
+          await ChatMessage.create({ senderEmail: user.email, senderName: user.name, text: data.text, sender: 'user' });
+        } catch (e) { console.error('Save chat error:', e); }
+      }
+      
       io.emit('admin_receive_message', { userId: socket.id, message });
       io.emit('admin_update_users', Array.from(activeUsers.values()));
     }
   });
 
   // Admin sends message
-  socket.on('admin_send_message', (data) => {
+  socket.on('admin_send_message', async (data) => {
     const { userId, text } = data;
     const user = activeUsers.get(userId);
     if (user) {
       user.unread = 0;
+      
+      // Save admin reply to database
+      if (user.email) {
+        try {
+          await ChatMessage.create({ senderEmail: user.email, senderName: 'Admin', text, sender: 'admin' });
+        } catch (e) { console.error('Save admin chat error:', e); }
+      }
+      
       io.to(userId).emit('user_receive_message', {
         id: Date.now(), text, sender: 'admin', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       });

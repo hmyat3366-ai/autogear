@@ -21,12 +21,25 @@ export default function ChatWidget() {
 
     socket.on('connect', () => {
       setIsConnected(true);
-      socket.emit('user_join', { name: user?.name || 'Guest User' });
+      socket.emit('user_join', { name: user?.name || 'Guest User', email: user?.email || '' });
+    });
+
+    socket.on('chat_history', (history) => {
+      if (history && history.length > 0) {
+        const loadedMsgs = history.map((msg, i) => ({
+          id: msg._id || i,
+          text: msg.text,
+          sender: msg.sender,
+          time: new Date(msg.createdAt),
+        }));
+        setMessages([
+          { id: 'welcome', text: 'AutoGear မှ ကြိုဆိုပါတယ်ခင်ဗျာ! 🚗 ဒီနေ့ ဘာများကူညီပေးရမလဲ?', sender: 'admin', time: new Date() },
+          ...loadedMsgs
+        ]);
+      }
     });
 
     socket.on('user_receive_message', (msg) => {
-      // Need to parse string time back to a real Date or just use the string.
-      // The server sends time as a string. Let's just store it.
       setMessages(prev => [...prev, { ...msg, time: new Date() }]);
     });
 
