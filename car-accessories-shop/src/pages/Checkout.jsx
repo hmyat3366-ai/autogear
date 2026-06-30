@@ -236,7 +236,9 @@ export default function Checkout() {
           {/* Notes */}
           <div className="checkout-card">
             <h3>📝 Order Notes (Optional)</h3>
-            <textarea name="notes" value={form.notes} onChange={handleChange} placeholder="Any special instructions..." rows="3" />
+            <div className="form-group">
+              <textarea name="notes" value={form.notes} onChange={handleChange} placeholder="Any special instructions..." rows="4" style={{ resize: 'vertical' }} />
+            </div>
           </div>
         </div>
 
