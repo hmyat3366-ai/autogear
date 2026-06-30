@@ -58,7 +58,7 @@ export default function Orders() {
           <div key={idx} className="order-card">
             <div className="order-header">
               <div>
-                <h3>Order {order.id}</h3>
+                <h3>Order {order._id}</h3>
                 <p className="order-date">{new Date(order.date).toLocaleDateString()}</p>
               </div>
               <div className="order-method-badge">

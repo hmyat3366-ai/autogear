@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
@@ -10,45 +10,69 @@ export const AuthProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const [registeredUsers, setRegisteredUsers] = useState(() => {
-    const saved = localStorage.getItem('autogear_users_db');
-    const defaultUsers = [
-      { name: 'Admin', email: 'admin@test.com', password: '123', role: 'admin' },
-      { name: 'Test User', email: 'user@test.com', password: '123', role: 'user' }
-    ];
-    return saved ? JSON.parse(saved) : defaultUsers;
-  });
+  const [registeredUsers, setRegisteredUsers] = useState([]);
+  const API_URL = 'http://localhost:3001/api';
 
-  const login = (email, password) => {
-    const foundUser = registeredUsers.find(u => u.email === email && u.password === password);
-    if (foundUser) {
-      const sessionUser = { name: foundUser.name, email: foundUser.email, role: foundUser.role };
-      setUser(sessionUser);
-      localStorage.setItem('autogear_user', JSON.stringify(sessionUser));
-      return true;
+  useEffect(() => {
+    // Only fetch users if logged in as admin
+    if (user?.role === 'admin') {
+      fetch(`${API_URL}/users`)
+        .then(res => res.json())
+        .then(data => setRegisteredUsers(data))
+        .catch(err => console.error('Failed to fetch users:', err));
     }
-    return false;
+  }, [user]);
+
+  const login = async (email, password) => {
+    try {
+      const response = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      
+      const data = await response.json();
+      if (response.ok) {
+        setUser(data.user);
+        localStorage.setItem('autogear_user', JSON.stringify(data.user));
+        localStorage.setItem('autogear_token', data.token);
+        return true;
+      } else {
+        console.error(data.error);
+        return false;
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      return false;
+    }
   };
 
-  const signup = (name, email, password) => {
-    if (registeredUsers.find(u => u.email === email)) {
-      return { success: false, message: 'Email already exists' };
+  const signup = async (name, email, password) => {
+    try {
+      const response = await fetch(`${API_URL}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+      
+      const data = await response.json();
+      if (response.ok) {
+        setUser(data.user);
+        localStorage.setItem('autogear_user', JSON.stringify(data.user));
+        localStorage.setItem('autogear_token', data.token);
+        return { success: true };
+      } else {
+        return { success: false, message: data.error || 'Signup failed' };
+      }
+    } catch (err) {
+      return { success: false, message: 'Server error' };
     }
-    const newUser = { name, email, password, role: 'user' };
-    const updatedUsers = [...registeredUsers, newUser];
-    setRegisteredUsers(updatedUsers);
-    localStorage.setItem('autogear_users_db', JSON.stringify(updatedUsers));
-    
-    // Auto login after signup
-    const sessionUser = { name, email, role: 'user' };
-    setUser(sessionUser);
-    localStorage.setItem('autogear_user', JSON.stringify(sessionUser));
-    return { success: true };
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('autogear_user');
+    localStorage.removeItem('autogear_token');
   };
 
   return (

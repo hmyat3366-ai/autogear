@@ -47,8 +47,8 @@ export default function AdminOrders() {
             <tbody>
               {orders.length === 0 && <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No orders yet. Go to Checkout to create one.</td></tr>}
               {orders.map(order => (
-                <tr key={order.id} style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                  <td style={{ padding: '1rem', fontWeight: 'bold' }}>{order.id}</td>
+                <tr key={order._id} style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                  <td style={{ padding: '1rem', fontWeight: 'bold' }}>{order._id}</td>
                   <td style={{ padding: '1rem' }}>{new Date(order.date).toLocaleDateString()}</td>
                   <td style={{ padding: '1rem' }}>
                     {order.customer?.fullName || 'Guest'}<br/>
@@ -67,7 +67,7 @@ export default function AdminOrders() {
                   <td style={{ padding: '1rem' }}>
                     <select 
                       value={order.status} 
-                      onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                      onChange={(e) => updateOrderStatus(order._id, e.target.value)}
                       style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0.4rem', borderRadius: '6px' }}
                     >
                       <option value="Processing">Processing</option>
