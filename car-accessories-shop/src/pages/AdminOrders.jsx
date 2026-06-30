@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
 import { Link } from 'react-router-dom';
+import AdminSidebar from '../components/AdminSidebar';
 
 export default function AdminOrders() {
   const { user } = useAuth();
@@ -33,16 +34,16 @@ export default function AdminOrders() {
               </tr>
             </thead>
             <tbody>
-              {orders.length === 0 && <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No orders yet. Go to Checkout to create one.</td></tr>}
-              {orders.map(order => (
+              {(!orders || orders.length === 0) && <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No orders yet. Go to Checkout to create one.</td></tr>}
+              {orders && orders.map(order => (
                 <tr key={order._id} style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                   <td style={{ padding: '1rem', fontWeight: 'bold' }}>{order._id}</td>
-                  <td style={{ padding: '1rem' }}>{new Date(order.date).toLocaleDateString()}</td>
+                  <td style={{ padding: '1rem' }}>{new Date(order.createdAt).toLocaleDateString()}</td>
                   <td style={{ padding: '1rem' }}>
-                    {order.customer?.fullName || 'Guest'}<br/>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{order.customer?.email || 'N/A'}</span>
+                    {order.customerName || 'Guest'}<br/>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{order.customerId || 'N/A'}</span>
                   </td>
-                  <td style={{ padding: '1rem' }}>${order.total}</td>
+                  <td style={{ padding: '1rem' }}>${order.totalAmount}</td>
                   <td style={{ padding: '1rem' }}>
                     <span style={{ 
                       padding: '4px 10px', borderRadius: '20px', fontSize: '0.8rem',
