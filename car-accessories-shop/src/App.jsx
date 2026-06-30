@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { ProductProvider } from './context/ProductContext';
 import { OrderProvider } from './context/OrderContext';
@@ -30,7 +30,14 @@ import './index.css';
 function AppContent() {
   const [cartOpen, setCartOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
+  
   const isAdminRoute = location.pathname.startsWith('/admin');
+
+  // Enforce login for all pages except login pages
+  if (!user && location.pathname !== '/login' && location.pathname !== '/admin-login') {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <>
