@@ -273,28 +273,49 @@ a{color:inherit;text-decoration:none}
 .admin-card p{color:var(--text-muted);font-size:.9rem;margin-bottom:1.5rem;min-height:40px}
 .admin-card .btn-secondary{width:100%}
 
-/* RESPONSIVE */
-@media(max-width:768px){
-.mobile-toggle{display:block}
-.nav-links{position:fixed;top:60px;left:0;right:0;background:var(--bg-card);flex-direction:column;padding:1.5rem;gap:1rem;transform:translateY(-120%);transition:transform .3s;border-bottom:1px solid var(--border);z-index:99}
-.nav-links.open{transform:translateY(0)}
-.hero{flex-direction:column;min-height:auto;padding:3rem 5%}
-.hero-title{font-size:2.2rem}
-.hero-visual{display:none}
-.hero-stats{gap:1.5rem}
-.product-grid{grid-template-columns:1fr 1fr}
-.contact-grid{grid-template-columns:1fr}
-.checkout-grid{grid-template-columns:1fr}
-.footer-grid{grid-template-columns:1fr 1fr}
-.cart-sidebar{width:100%}
-.chat-widget{width:calc(100% - 2rem);right:1rem;bottom:1rem;height:60vh}
-.categories-grid{grid-template-columns:1fr}
-.category-cards{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
-.tracking-timeline{flex-wrap:wrap;gap:.5rem}
-.tracking-step{min-width:80px}
+/* --- RESPONSIVE DESIGN (TABLET & MOBILE) --- */
+
+/* TABLET VIEW (max-width: 1024px) */
+@media(max-width: 1024px) {
+  .hero { padding: 4rem 5%; }
+  .hero-title { font-size: 3rem; }
+  .product-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .footer-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+  .premium-login-card { padding: 3rem 2rem; max-width: 400px; }
+  .checkout-grid { grid-template-columns: 1fr; gap: 2rem; }
 }
-@media(max-width:480px){
-.product-grid{grid-template-columns:1fr}
-.footer-grid{grid-template-columns:1fr}
-.form-row{grid-template-columns:1fr}
+
+/* MOBILE VIEW - LANDSCAPE (max-width: 768px) */
+@media(max-width: 768px) {
+  .mobile-toggle { display: block; }
+  .nav-links { position: fixed; top: 60px; left: 0; right: 0; background: rgba(15, 17, 21, 0.95); backdrop-filter: blur(10px); flex-direction: column; padding: 2rem; gap: 1.5rem; transform: translateY(-150%); transition: transform 0.4s ease; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 99; text-align: center; }
+  .nav-links.open { transform: translateY(0); }
+  .hero { flex-direction: column; text-align: center; padding: 3rem 5%; }
+  .hero-title { font-size: 2.4rem; }
+  .hero-visual { display: none; }
+  .hero-stats { justify-content: center; flex-wrap: wrap; gap: 1.5rem; }
+  .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .cart-sidebar { width: 100%; right: -100%; }
+  .cart-sidebar.open { right: 0; }
+  .chat-widget { width: calc(100% - 2rem); right: 1rem; bottom: 1rem; height: 65vh; border-radius: 16px; }
+  .categories-grid { grid-template-columns: 1fr; }
+  .category-cards { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .tracking-timeline { flex-wrap: wrap; gap: 0.5rem; }
+  .tracking-step { min-width: 80px; }
+  .promo-banner { padding: 2rem; margin: 1rem 5%; }
+  .promo-content h2 { font-size: 1.5rem; }
+}
+
+/* MOBILE VIEW - PORTRAIT (max-width: 480px) */
+@media(max-width: 480px) {
+  .hero-title { font-size: 2rem; }
+  .product-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; text-align: center; }
+  .footer-col h3::after { left: 50%; transform: translateX(-50%); }
+  .form-row { grid-template-columns: 1fr; }
+  .premium-login-container { padding: 1rem; }
+  .premium-login-card { padding: 2rem 1.5rem; border-radius: 16px; }
+  .login-header h2 { font-size: 1.8rem; }
+  .search-bar input { font-size: 0.9rem; }
 }
