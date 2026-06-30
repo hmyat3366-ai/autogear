@@ -32,6 +32,8 @@ export default function Navbar({ onCartOpen }) {
             <Link to="/wishlist" className={isActive('/wishlist') ? 'active' : ''} onClick={() => setMobileOpen(false)}>
               Wishlist {wishlist.length > 0 && `(${wishlist.length})`}
             </Link>
+          </>
+        )}
         {user ? (
           <button className="role-toggle-btn" onClick={() => { logout(); setMobileOpen(false); }} title="Logout">
             Logout ({user.name})
