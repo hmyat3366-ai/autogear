@@ -10,13 +10,19 @@ export default function Orders() {
   useEffect(() => {
     const updatedOrders = orders.map(order => {
       const statusLevel = {
-        'confirmed': 0,
         'Processing': 1,
         'Shipped': 2,
         'Delivered': 3
-      }[order.status] || 0;
+      }[order.status] || 1;
 
-      const newSteps = order.trackingSteps.map((step, idx) => {
+      const baseSteps = order.trackingSteps && order.trackingSteps.length > 0 ? order.trackingSteps : [
+        { step: 'Order Confirmed', done: true, time: new Date(order.createdAt).toLocaleString() },
+        { step: 'Processing', done: false, time: '' },
+        { step: order.deliveryMethod === 'delivery' ? 'Shipped' : 'Ready for Pickup', done: false, time: '' },
+        { step: order.deliveryMethod === 'delivery' ? 'Delivered' : 'Picked Up', done: false, time: '' },
+      ];
+
+      const newSteps = baseSteps.map((step, idx) => {
         if (idx <= statusLevel) {
           return { ...step, done: true, time: step.time || new Date().toLocaleString() };
         }
@@ -59,7 +65,7 @@ export default function Orders() {
             <div className="order-header">
               <div>
                 <h3>Order {order._id}</h3>
-                <p className="order-date">{new Date(order.date).toLocaleDateString()}</p>
+                <p className="order-date">{new Date(order.createdAt).toLocaleDateString()}</p>
               </div>
               <div className="order-method-badge">
                 {order.deliveryMethod === 'delivery' ? '🚚 Delivery' : '🏪 Take Away'}
@@ -103,12 +109,12 @@ export default function Orders() {
                 <span className="order-est">
                   {order.deliveryMethod === 'delivery'
                     ? `📅 Estimated: ${order.estimatedDelivery}`
-                    : `⚡ ${order.estimatedDelivery}`
+                    : `⚡ ${order.estimatedDelivery || 'Ready soon'}`
                   }
                 </span>
               </div>
               <div className="order-total">
-                Total: <strong>${order.total.toFixed(2)}</strong>
+                Total: <strong>${(order.totalAmount || 0).toFixed(2)}</strong>
               </div>
             </div>
           </div>

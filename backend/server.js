@@ -40,6 +40,9 @@ const OrderSchema = new mongoose.Schema({
   totalAmount: Number,
   paymentMethod: String,
   shippingAddress: Object,
+  deliveryMethod: String,
+  estimatedDelivery: String,
+  trackingSteps: Array,
   status: { type: String, default: 'Processing' }, // Processing, Shipped, Delivered
   createdAt: { type: Date, default: Date.now }
 });

@@ -51,14 +51,13 @@ export default function Checkout() {
     }
 
     const order = {
-      id: 'ORD-' + Date.now().toString(36).toUpperCase(),
       items: [...items],
-      total,
+      totalAmount: total,
       deliveryMethod,
       paymentMethod,
-      customer: form,
-      status: 'confirmed',
-      date: new Date().toISOString(),
+      shippingAddress: form,
+      status: 'Processing',
+      createdAt: new Date().toISOString(),
       estimatedDelivery: deliveryMethod === 'delivery'
         ? new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString()
         : 'Ready in 2 hours',
