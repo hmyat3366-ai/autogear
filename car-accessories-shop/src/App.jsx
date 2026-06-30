@@ -80,7 +80,7 @@ function App() {
         <OrderProvider>
           <WishlistProvider>
             <CartProvider>
-              <BrowserRouter>
+              <BrowserRouter basename="/autogear">
                 <AppContent />
               </BrowserRouter>
             </CartProvider>
