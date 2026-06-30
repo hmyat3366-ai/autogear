@@ -80,7 +80,7 @@ function App() {
         <OrderProvider>
           <WishlistProvider>
             <CartProvider>
-              <BrowserRouter basename="/autogear">
+              <BrowserRouter basename={import.meta.env.BASE_URL}>
                 <AppContent />
               </BrowserRouter>
             </CartProvider>
