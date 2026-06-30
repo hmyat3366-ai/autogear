@@ -10,7 +10,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -20,11 +20,15 @@ export default function AdminLogin() {
       return;
     }
 
-    const success = login(email, password);
-    if (success) {
-      navigate('/admin');
-    } else {
-      setError('Invalid admin credentials.');
+    try {
+      const success = await login(email, password);
+      if (success) {
+        navigate('/admin');
+      } else {
+        setError('Invalid admin credentials.');
+      }
+    } catch (err) {
+      setError('Error connecting to server.');
     }
   };
 
