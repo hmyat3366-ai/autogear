@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 
+const API_URL = 'https://autogear-api.onrender.com/api';
+
 export default function AdminDashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout, registeredUsers } = useAuth();
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      fetch(`${API_URL}/orders`)
+        .then(res => res.json())
+        .then(data => setOrders(Array.isArray(data) ? data : []))
+        .catch(err => console.error('Failed to fetch orders:', err));
+    }
+  }, [user]);
+
+  const totalRevenue = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+  const activeOrders = orders.filter(o => o.status === 'Processing').length;
+  const totalCustomers = registeredUsers?.length || 0;
 
   if (!user || user.role !== 'admin') {
     return (
@@ -79,10 +95,10 @@ export default function AdminDashboard() {
         {/* Stats Row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
           {[
-            { label: 'Total Revenue', value: '$12,450.00', trend: '+15%', trendUp: true, icon: '💰' },
-            { label: 'Active Orders', value: '45', trend: '+5%', trendUp: true, icon: '📦' },
-            { label: 'Total Customers', value: '1,204', trend: '+12%', trendUp: true, icon: '👥' },
-            { label: 'Pending Chats', value: '3', trend: '-2', trendUp: false, icon: '💬', link: '/admin/chat' }
+            { label: 'Total Revenue', value: `$${totalRevenue.toLocaleString('en-US', {minimumFractionDigits:2})}`, trend: `${orders.length} orders`, trendUp: true, icon: '💰' },
+            { label: 'Active Orders', value: `${activeOrders}`, trend: 'Processing', trendUp: activeOrders > 0, icon: '📦' },
+            { label: 'Total Customers', value: `${totalCustomers}`, trend: 'Registered', trendUp: true, icon: '👥' },
+            { label: 'Live Chat', value: '💬', trend: 'Open Inbox', trendUp: true, icon: '💬', link: '/admin/chat' }
           ].map((stat, i) => (
             <div key={i} style={{ background: '#12141a', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
@@ -107,45 +123,48 @@ export default function AdminDashboard() {
         <div style={{ background: '#12141a', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
           <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ margin: 0 }}>Recent Orders</h3>
-            <button style={{ background: 'transparent', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: 'bold' }}>View All</button>
+            <Link to="/admin/orders" style={{ background: 'transparent', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: 'bold', textDecoration: 'none' }}>View All →</Link>
           </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ background: 'rgba(0,0,0,0.2)' }}>
-                <th style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Order ID</th>
-                <th style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Customer</th>
-                <th style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Date</th>
-                <th style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Amount</th>
-                <th style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { id: 'ORD-8091', name: 'Aung Aung', date: 'Today, 2:30 PM', amount: '$120.00', status: 'Processing' },
-                { id: 'ORD-8090', name: 'Kyaw Swar', date: 'Today, 11:15 AM', amount: '$45.50', status: 'Shipped' },
-                { id: 'ORD-8089', name: 'Su Myat', date: 'Yesterday', amount: '$310.00', status: 'Delivered' },
-              ].map((order, i) => (
-                <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
-                  <td style={{ padding: '1rem 1.5rem', fontWeight: '500' }}>{order.id}</td>
-                  <td style={{ padding: '1rem 1.5rem' }}>{order.name}</td>
-                  <td style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)' }}>{order.date}</td>
-                  <td style={{ padding: '1rem 1.5rem', fontWeight: 'bold' }}>{order.amount}</td>
-                  <td style={{ padding: '1rem 1.5rem' }}>
-                    <span style={{ 
-                      padding: '4px 10px', 
-                      borderRadius: '12px', 
-                      fontSize: '0.8rem', 
-                      fontWeight: 'bold',
-                      background: order.status === 'Delivered' ? 'rgba(76,175,80,0.1)' : order.status === 'Processing' ? 'rgba(255,152,0,0.1)' : 'rgba(33,150,243,0.1)',
-                      color: order.status === 'Delivered' ? '#4caf50' : order.status === 'Processing' ? '#ff9800' : '#2196f3'
-                    }}>
-                      {order.status}
-                    </span>
-                  </td>
+          {orders.length === 0 ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📦</div>
+              <p>No orders yet. Orders will appear here in real-time.</p>
+            </div>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ background: 'rgba(0,0,0,0.2)' }}>
+                  <th style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Order ID</th>
+                  <th style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Customer</th>
+                  <th style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Date</th>
+                  <th style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Amount</th>
+                  <th style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {orders.slice(0, 5).map((order, i) => (
+                  <tr key={order._id || i} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'background 0.2s' }} onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'} onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
+                    <td style={{ padding: '1rem 1.5rem', fontWeight: '500' }}>{order._id ? `ORD-${order._id.slice(-4).toUpperCase()}` : `ORD-${i}`}</td>
+                    <td style={{ padding: '1rem 1.5rem' }}>{order.customerName || 'Unknown'}</td>
+                    <td style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)' }}>{new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                    <td style={{ padding: '1rem 1.5rem', fontWeight: 'bold' }}>${(order.totalAmount || 0).toFixed(2)}</td>
+                    <td style={{ padding: '1rem 1.5rem' }}>
+                      <span style={{ 
+                        padding: '4px 10px', 
+                        borderRadius: '12px', 
+                        fontSize: '0.8rem', 
+                        fontWeight: 'bold',
+                        background: order.status === 'Delivered' ? 'rgba(76,175,80,0.1)' : order.status === 'Processing' ? 'rgba(255,152,0,0.1)' : 'rgba(33,150,243,0.1)',
+                        color: order.status === 'Delivered' ? '#4caf50' : order.status === 'Processing' ? '#ff9800' : '#2196f3'
+                      }}>
+                        {order.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
       </div>
