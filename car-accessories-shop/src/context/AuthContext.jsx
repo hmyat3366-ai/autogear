@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [registeredUsers, setRegisteredUsers] = useState([]);
-  const API_URL = 'http://localhost:3001/api';
+  const API_URL = 'https://autogear-api.onrender.com/api';
 
   useEffect(() => {
     // Only fetch users if logged in as admin

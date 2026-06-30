@@ -17,7 +17,7 @@ export default function AdminChat() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    socket = io('http://localhost:3001');
+    socket = io('https://autogear-api.onrender.com');
 
     socket.on('connect', () => {
       console.log('Admin connected to chat server');

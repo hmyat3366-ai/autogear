@@ -16,7 +16,7 @@ export default function ChatWidget() {
 
   useEffect(() => {
     // Initialize socket connection
-    socket = io('http://localhost:3001');
+    socket = io('https://autogear-api.onrender.com');
 
     socket.on('connect', () => {
       setIsConnected(true);

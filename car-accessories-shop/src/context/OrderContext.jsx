@@ -9,8 +9,8 @@ export const useOrders = () => useContext(OrderContext);
 export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const { user } = useAuth();
-  const API_URL = 'http://localhost:3001/api';
-  const SOCKET_URL = 'http://localhost:3001';
+  const API_URL = 'https://autogear-api.onrender.com/api';
+  const SOCKET_URL = 'https://autogear-api.onrender.com';
 
   // Fetch initial orders
   useEffect(() => {
