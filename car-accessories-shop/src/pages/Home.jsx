@@ -12,7 +12,7 @@ export default function Home() {
   const promos = [
     {
       id: 1,
-      image: '/images/promo1.png',
+      image: import.meta.env.BASE_URL + 'images/promo1.png',
       badge: '⚡ FLASH SALE ACTIVE',
       title: 'Mega Sale!',
       subtitle: 'Up to 50% OFF on Premium Interiors',
@@ -20,7 +20,7 @@ export default function Home() {
     },
     {
       id: 2,
-      image: '/images/promo2.png',
+      image: import.meta.env.BASE_URL + 'images/promo2.png',
       badge: '🔥 HOT DEALS',
       title: 'Performance',
       subtitle: 'Wheels & Brakes - 30% OFF',
@@ -28,7 +28,7 @@ export default function Home() {
     },
     {
       id: 3,
-      image: '/images/promo3.png',
+      image: import.meta.env.BASE_URL + 'images/promo3.png',
       badge: '💡 NEW ARRIVALS',
       title: 'Light Up',
       subtitle: 'Aggressive LED Kits',
