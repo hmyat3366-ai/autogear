@@ -32,21 +32,18 @@ export default function Navbar({ onCartOpen }) {
             <Link to="/wishlist" className={isActive('/wishlist') ? 'active' : ''} onClick={() => setMobileOpen(false)}>
               Wishlist {wishlist.length > 0 && `(${wishlist.length})`}
             </Link>
-          </>
+        {user ? (
+          <button className="role-toggle-btn" onClick={() => { logout(); setMobileOpen(false); }} title="Logout">
+            Logout ({user.name})
+          </button>
+        ) : (
+          <Link to="/login" className="role-toggle-btn" style={{ textDecoration: 'none' }} onClick={() => setMobileOpen(false)}>
+            Login
+          </Link>
         )}
       </div>
 
       <div className="nav-actions">
-        {user ? (
-          <button className="role-toggle-btn" onClick={logout} title="Logout">
-            Logout ({user.name})
-          </button>
-        ) : (
-          <Link to="/login" className="role-toggle-btn" style={{ textDecoration: 'none' }}>
-            Login
-          </Link>
-        )}
-
         {user?.role !== 'admin' && (
           <button className="cart-btn" onClick={onCartOpen}>
             🛒 Cart {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
